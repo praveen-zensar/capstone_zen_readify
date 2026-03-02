@@ -1,0 +1,49 @@
+<div class="container my-4">
+  <app-navbar></app-navbar>
+
+  <div class="row my-3">
+    <div class="col-md-8">
+      <div class="input-group">
+        <input [(ngModel)]="query" (ngModelChange)="search()" class="form-control" placeholder="Search by title or author" />
+        <button class="btn btn-outline-secondary" (click)="search()">Search</button>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="btn-group" role="group" aria-label="genres">
+        <label *ngFor="let g of genres" class="btn btn-sm btn-outline-primary" [class.active]="genre===g">
+          <input type="radio" name="genre" [value]="g" (change)="onGenreChange(g)" [checked]="genre===g" /> {{g}}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <section class="mb-4">
+    <h4>Best Sellers</h4>
+    <div class="row g-3">
+      <div class="col-sm-6 col-md-3" *ngFor="let b of bestSellers">
+        <app-book-card [book]="b" (open)="openBook($event)"></app-book-card>
+      </div>
+      <div *ngIf="bestSellers.length===0" class="text-muted px-3">No results</div>
+    </div>
+  </section>
+
+  <section class="mb-4">
+    <h4>New Arrivals</h4>
+    <div class="row g-3">
+      <div class="col-sm-6 col-md-3" *ngFor="let b of newArrivals">
+        <app-book-card [book]="b" (open)="openBook($event)"></app-book-card>
+      </div>
+      <div *ngIf="newArrivals.length===0" class="text-muted px-3">No results</div>
+    </div>
+  </section>
+
+  <section class="mb-4">
+    <h4>Editor's Picks</h4>
+    <div class="row g-3">
+      <div class="col-sm-6 col-md-3" *ngFor="let b of editorsPicks">
+        <app-book-card [book]="b" (open)="openBook($event)"></app-book-card>
+      </div>
+      <div *ngIf="editorsPicks.length===0" class="text-muted px-3">No results</div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,12 @@
+<div class="card h-100" (click)="openDetails()" style="cursor:pointer;">
+  <img [src]="book.cover || book.imageUrl" class="card-img-top" alt="{{book.title}}" />
+  <div class="card-body">
+    <h5 class="card-title">{{ book.title }}</h5>
+    <p class="card-subtitle text-muted mb-2">{{ book.author }}</p>
+    <p class="card-text small text-truncate">{{ book.description }}</p>
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      <small class="text-muted">{{ book.genre }}</small>
+      <small class="text-warning">{{ book.rating || '—' }}</small>
+    </div>
+  </div>
+</div>
