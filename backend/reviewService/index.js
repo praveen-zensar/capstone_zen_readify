@@ -17,7 +17,7 @@ app.use(express.json());
 app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'review-service' }));
 
 // Routes
-app.use('/api/reviews', reviewRoutes);
+app.use('/', reviewRoutes);
 
 connectDB(MONGO_URI).then(() => {
   app.listen(PORT, () => {
@@ -32,7 +32,7 @@ connectDB(MONGO_URI).then(() => {
       console.log(`Deleted reviews for book ${data.bookId}`);
     });
   } catch (_) {
-    console.log('Redis not available – skipping event subscriptions');
+    console.log('Redis not available _ skipping event subscriptions');
   }
 });
 

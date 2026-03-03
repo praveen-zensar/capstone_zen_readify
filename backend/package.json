@@ -13,7 +13,8 @@
     "start:reviews": "node reviewService/index.js",
     "start:categories": "node categoryService/index.js",
     "start:all": "concurrently \"npm run start:books\" \"npm run start:search\" \"npm run start:reviews\" \"npm run start:categories\" \"npm run start:gateway\"",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "start:dev": "concurrently \"nodemon config/index.js\" \"nodemon bookService/index.js\" \"nodemon searchService/index.js\" \"nodemon reviewService/index.js\"  \"nodemon categoryService/index.js\""
   },
   "dependencies": {
     "axios": "^1.7.2",
@@ -25,7 +26,8 @@
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.3",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "nodemon": "^3.1.14"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

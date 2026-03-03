@@ -13,7 +13,7 @@ app.use(express.json());
 app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'search-service' }));
 
 // Routes
-app.use('/api/search', searchRoutes);
+app.use('/', searchRoutes);
 
 app.listen(PORT, () => {
   console.log(`🔍 Search Service running on port ${PORT}`);

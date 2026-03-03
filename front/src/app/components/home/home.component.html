@@ -1,5 +1,7 @@
 <div class="container my-4">
   <app-navbar></app-navbar>
+  <div *ngIf="!books.length" class="alert alert-info">Loading books...</div>
+  <div *ngIf="books.length===0 && query" class="alert alert-warning">No results found.</div>
 
   <div class="row my-3">
     <div class="col-md-8">

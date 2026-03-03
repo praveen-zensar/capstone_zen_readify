@@ -31,16 +31,38 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// Request path logging for debugging
+app.use((req, res, next) => {
+  console.log(`[GATEWAY] ${req.method} ${req.path}`);
+  next();
+});
+
 // ── Health Check ──────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'api-gateway' }));
+
+// ── Diagnostic: Test Category Service ──────────────────────────
+app.get('/health', async (req, res) => {
+  try {
+    const response = await axios.get(`${CATEGORY_SERVICE_URL}/health`, { timeout: 5000 });
+    res.json({ status: 'ok', categoryServiceHealth: response.data });
+  } catch (err) {
+    console.error(`Cannot reach Category Service at ${CATEGORY_SERVICE_URL}:`, err.message);
+    res.status(503).json({ 
+      status: 'error', 
+      message: 'Category Service unreachable',
+      categoryServiceUrl: CATEGORY_SERVICE_URL,
+      error: err.message 
+    });
+  }
+});
 
 // ── Aggregation: Book + Reviews ─────────────────────────────
 // GET /api/books/:id/details  → combined book metadata + reviews
 app.get('/api/books/:id/details', async (req, res) => {
   try {
     const [bookRes, reviewsRes] = await Promise.all([
-      axios.get(`${BOOK_SERVICE_URL}/api/books/${req.params.id}`),
-      axios.get(`${REVIEW_SERVICE_URL}/api/reviews/${req.params.id}`),
+      axios.get(`${BOOK_SERVICE_URL}/${req.params.id}`),
+      axios.get(`${REVIEW_SERVICE_URL}/${req.params.id}`),
     ]);
     res.json({ ...bookRes.data, reviews: reviewsRes.data });
   } catch (err) {
@@ -55,6 +77,10 @@ app.use(
   createProxyMiddleware({
     target: BOOK_SERVICE_URL,
     changeOrigin: true,
+    onError: (err, req, res) => {
+      console.error('Book Service proxy error:', err.message);
+      res.status(503).json({ error: 'Book Service unavailable' });
+    },
   })
 );
 
@@ -64,6 +90,10 @@ app.use(
   createProxyMiddleware({
     target: SEARCH_SERVICE_URL,
     changeOrigin: true,
+    onError: (err, req, res) => {
+      console.error('Search Service proxy error:', err.message);
+      res.status(503).json({ error: 'Search Service unavailable' });
+    },
   })
 );
 
@@ -73,6 +103,10 @@ app.use(
   createProxyMiddleware({
     target: REVIEW_SERVICE_URL,
     changeOrigin: true,
+    onError: (err, req, res) => {
+      console.error('Review Service proxy error:', err.message);
+      res.status(503).json({ error: 'Review Service unavailable' });
+    },
   })
 );
 
@@ -82,6 +116,11 @@ app.use(
   createProxyMiddleware({
     target: CATEGORY_SERVICE_URL,
     changeOrigin: true,
+    logLevel: 'debug',
+    onError: (err, req, res) => {
+      console.error(`Category Service proxy error on ${req.method} ${req.url}:`, err.message);
+      res.status(503).json({ error: 'Category Service unavailable' });
+    },
   })
 );
 

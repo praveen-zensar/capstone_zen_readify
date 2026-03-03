@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     if (genre) params.genre = genre;
 
     // Fetch all books (optionally filtered by genre) from Book Service
-    const { data: books } = await axios.get(`${BOOK_SERVICE_URL}/api/books`, { params });
+    const { data: books } = await axios.get(`${BOOK_SERVICE_URL}`, { params });
 
     let results = books;
 

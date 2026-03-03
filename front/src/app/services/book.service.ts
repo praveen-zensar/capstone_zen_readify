@@ -13,7 +13,8 @@ export interface Review {
 
 @Injectable({ providedIn: 'root' })
 export class BookService {
-  private baseUrl = 'http://localhost:3000/api/';
+  // use relative path so angular dev-server proxy or deployment host can handle
+  private baseUrl = '/api';
 
   constructor(private http: HttpClient) {}
 

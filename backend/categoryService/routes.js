@@ -5,13 +5,13 @@ const router = express.Router();
 
 const BOOK_SERVICE_URL = process.env.BOOK_SERVICE_URL || 'http://localhost:3001';
 
-// GET /api/categories – returns categorized book lists
+// GET / – returns categorized book lists
 router.get('/', async (req, res) => {
   try {
     const [bestSellers, newArrivals, editorsPicks] = await Promise.all([
-      axios.get(`${BOOK_SERVICE_URL}/api/books`, { params: { category: 'Best Seller' } }),
-      axios.get(`${BOOK_SERVICE_URL}/api/books`, { params: { category: 'New Arrival' } }),
-      axios.get(`${BOOK_SERVICE_URL}/api/books`, { params: { category: "Editor's Pick" } }),
+      axios.get(`${BOOK_SERVICE_URL}`, { params: { category: 'best-seller' } }),
+      axios.get(`${BOOK_SERVICE_URL}`, { params: { category: 'new-arrival' } }),
+      axios.get(`${BOOK_SERVICE_URL}`, { params: { category: 'editors-pick' } }),
     ]);
 
     res.json({
@@ -25,10 +25,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/categories/:category – books for a specific category
+// GET /:category – books for a specific category
 router.get('/:category', async (req, res) => {
   try {
-    const { data: books } = await axios.get(`${BOOK_SERVICE_URL}/api/books`, {
+    const { data: books } = await axios.get(`${BOOK_SERVICE_URL}`, {
       params: { category: req.params.category },
     });
     res.json(books);

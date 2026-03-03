@@ -1,5 +1,5 @@
 import express from 'express';
-import BooksModel from './BookSchema.js';
+import BooksModel from './Book.model.js';
 import { publish } from '../config/eventBus.js';
 
 const router = express.Router();

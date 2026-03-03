@@ -27,13 +27,26 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     // load categorized lists initially
-    this.bs.getCategories().subscribe((cats) => {
-      this.bestSellers = cats.bestSellers;
-      this.newArrivals = cats.newArrivals;
-      this.editorsPicks = cats.editorsPicks;
-      // also keep mirrored books for search
-      this.books = [...this.bestSellers, ...this.newArrivals, ...this.editorsPicks];
-    });
+    this.bs.getCategories().subscribe(
+      (cats) => {
+        this.bestSellers = cats.bestSellers;
+        this.newArrivals = cats.newArrivals;
+        this.editorsPicks = cats.editorsPicks;
+        // also keep mirrored books for search
+        this.books = [...this.bestSellers, ...this.newArrivals, ...this.editorsPicks];
+      },
+      (err) => {
+        console.error('Failed to load categories', err);
+        // fallback: try fetching all books directly
+        this.bs.getBooks().subscribe(
+          (b) => {
+            this.books = b;
+            this.updateSections();
+          },
+          (e) => console.error('Failed to load books', e)
+        );
+      }
+    );
   }
 
   search() {
@@ -51,13 +64,13 @@ export class HomeComponent implements OnInit {
   updateSections() {
     // categorize using either explicit flags or category string
     this.bestSellers = this.books.filter(
-      (b) => b.bestseller || b.category === 'Best Seller'
+      (b) => b.bestseller || b.category === 'best-seller'
     );
     this.newArrivals = this.books.filter(
-      (b) => b.newArrival || b.category === 'New Arrival'
+      (b) => b.newArrival || b.category === 'new-arrival'
     );
     this.editorsPicks = this.books.filter(
-      (b) => b.editorsPick || b.category === "Editor's Pick"
+      (b) => b.editorsPick || b.category === "editors-pick"
     );
   }
 

@@ -13,7 +13,7 @@ app.use(express.json());
 app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'category-service' }));
 
 // Routes
-app.use('/api/categories', categoryRoutes);
+app.use('/', categoryRoutes);
 
 app.listen(PORT, () => {
   console.log(`📂 Category Service running on port ${PORT}`);
