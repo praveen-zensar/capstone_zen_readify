@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'zen_readify_secret_key';
 
@@ -31,4 +31,4 @@ const generateToken = (payload, expiresIn = '24h') => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn });
 };
 
-module.exports = { authenticate, generateToken, JWT_SECRET };
+export { authenticate, generateToken, JWT_SECRET };

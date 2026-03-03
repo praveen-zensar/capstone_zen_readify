@@ -1,11 +1,11 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const rateLimit = require('express-rate-limit');
-const axios = require('axios');
-const { authenticate } = require('./auth');
-const logger = require('./logger');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import rateLimit from 'express-rate-limit';
+import axios from 'axios';
+import { authenticate } from './auth.js';
+import logger from './logger.js';
 
 const app = express();
 const PORT = process.env.GATEWAY_PORT || 3000;
@@ -99,4 +99,4 @@ app.listen(PORT, () => {
   console.log(`   → Category Service: ${CATEGORY_SERVICE_URL}`);
 });
 
-module.exports = app;
+export default app;

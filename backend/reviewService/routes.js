@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import Review from './Review.js';
+import { publish } from '../config/eventBus.js';
+
 const router = express.Router();
-const Review = require('./Review');
-const { publish } = require('../config/eventBus');
 
 // GET /api/reviews/:bookId – list all reviews for a book
 router.get('/:bookId', async (req, res) => {
@@ -70,4 +71,4 @@ router.delete('/:bookId/:reviewId', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

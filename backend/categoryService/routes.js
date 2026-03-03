@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import axios from 'axios';
+
 const router = express.Router();
-const axios = require('axios');
 
 const BOOK_SERVICE_URL = process.env.BOOK_SERVICE_URL || 'http://localhost:3001';
 
@@ -37,4 +38,4 @@ router.get('/:category', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

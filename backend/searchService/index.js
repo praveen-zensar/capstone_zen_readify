@@ -1,7 +1,7 @@
-require('dotenv').config({ path: __dirname + '/../.env' });
-const express = require('express');
-const cors = require('cors');
-const searchRoutes = require('./routes');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import searchRoutes from './routes.js';
 
 const app = express();
 const PORT = process.env.SEARCH_SERVICE_PORT || 3002;
@@ -19,4 +19,4 @@ app.listen(PORT, () => {
   console.log(`🔍 Search Service running on port ${PORT}`);
 });
 
-module.exports = app;
+export default app;

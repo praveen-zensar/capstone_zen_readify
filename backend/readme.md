@@ -1,3 +1,8 @@
+# Backend Setup (ES Modules)
+
+The microservices now use ES6 modules (`import`/`export`). Node is configured with
+`"type": "module"` in `package.json`, so run services with plain `node`.
+
 # Redis Installation and Service Start
 
 `brew update`

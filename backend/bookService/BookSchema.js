@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const bookSchema = new mongoose.Schema(
   {
@@ -19,4 +19,5 @@ const bookSchema = new mongoose.Schema(
 // Compound text index for search
 bookSchema.index({ title: 'text', author: 'text' });
 
-module.exports = mongoose.model('Book', bookSchema);
+const BooksModel = mongoose.model('Book', bookSchema);
+export default BooksModel;

@@ -1,10 +1,10 @@
-require('dotenv').config({ path: __dirname + '/../.env' });
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('../config/db');
-const reviewRoutes = require('./routes');
-const { subscribe } = require('../config/eventBus');
-const Review = require('./Review');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import connectDB from '../config/db.js';
+import reviewRoutes from './routes.js';
+import { subscribe } from '../config/eventBus.js';
+import Review from './Review.js';
 
 const app = express();
 const PORT = process.env.REVIEW_SERVICE_PORT || 3003;
@@ -36,4 +36,4 @@ connectDB(MONGO_URI).then(() => {
   }
 });
 
-module.exports = app;
+export default app;

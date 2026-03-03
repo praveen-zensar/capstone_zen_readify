@@ -2,9 +2,9 @@
  * Seed script – populates MongoDB with sample books.
  * Run: node scripts/seed.js
  */
-require('dotenv').config({ path: __dirname + '/../.env' });
-const mongoose = require('mongoose');
-const Book = require('../bookService/Book');
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import Book from '../bookService/BookSchema.js';
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/zenreadify';
 

@@ -1,4 +1,4 @@
-const Redis = require('ioredis');
+import Redis from 'ioredis';
 
 let publisher = null;
 let subscriber = null;
@@ -41,4 +41,4 @@ const subscribe = (channel, callback) => {
   });
 };
 
-module.exports = { publish, subscribe, getPublisher, getSubscriber };
+export { publish, subscribe, getPublisher, getSubscriber };

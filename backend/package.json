@@ -1,6 +1,7 @@
 {
   "name": "zen-readify-microservices",
   "version": "1.0.0",
+  "type": "module",
   "description": "Microservices backend for Zen Readify application.",
   "main": "config/index.js",
   "author": "Praveen Patel",

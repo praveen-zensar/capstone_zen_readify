@@ -1,8 +1,13 @@
-require('dotenv').config({ path: __dirname + '/../.env' });
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('../config/db');
-const bookRoutes = require('./routes');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import connectDB from '../config/db.js';
+import bookRoutes from './routes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.BOOK_SERVICE_PORT || 3001;
@@ -23,4 +28,4 @@ connectDB(MONGO_URI).then(() => {
   });
 });
 
-module.exports = app;
+export default app;
