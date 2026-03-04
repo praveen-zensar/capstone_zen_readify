@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Book } from '../../models/book.model';
-import { BookService } from '../../services/book.service';
+import { BookService, Review } from '../../services/book.service';
 import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
@@ -14,7 +14,8 @@ import { NavbarComponent } from '../navbar/navbar.component';
 export class BookDetailsComponent implements OnInit {
   book?: Book;
   tab: 'description' | 'reviews' = 'description';
-  reviews: any[] = [];
+  reviews: Review[] = [];
+  loadingReviews = false;
 
   constructor(private route: ActivatedRoute, private bs: BookService, private router: Router) {}
 
@@ -27,11 +28,24 @@ export class BookDetailsComponent implements OnInit {
       }
       this.book = b;
     });
+  }
 
-    // fetch reviews as well
-    this.bs.getReviews(id).subscribe((r) => {
-      this.reviews = r;
-    });
+  /** called when user wants to view the reviews tab */
+  showReviews() {
+    this.tab = 'reviews';
+    if (this.reviews.length === 0 && this.book?.id) {
+      this.loadingReviews = true;
+      this.bs.getReviews(this.book.id).subscribe(
+        (r) => {
+          this.reviews = r;
+          this.loadingReviews = false;
+        },
+        (err) => {
+          console.error('[BookDetails] failed to load reviews', err);
+          this.loadingReviews = false;
+        }
+      );
+    }
   }
 
   goHome() {

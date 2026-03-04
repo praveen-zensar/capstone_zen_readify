@@ -75,6 +75,11 @@ export class HomeComponent implements OnInit {
   }
 
   openBook(id: string) {
+    console.log('openBook called with id:', id);
+    if (!id) {
+      console.warn('Received undefined id, attempting to log full book list for debugging');
+      console.log(this.books);
+    }
     this.router.navigate(['/book', id]);
   }
 }

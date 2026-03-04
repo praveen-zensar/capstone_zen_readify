@@ -14,6 +14,7 @@ export class BookCardComponent {
   @Output() open = new EventEmitter<string>();
 
   openDetails() {
+    console.log('[BookCard] clicked book:', this.book);
     this.open.emit(this.book.id);
   }
 }

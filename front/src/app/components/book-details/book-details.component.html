@@ -11,7 +11,14 @@
       <p><strong>Genre:</strong> {{ book.genre }}</p>
       <div class="mb-3">
         <button class="btn btn-outline-primary btn-sm me-2" (click)="tab='description'">Description</button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="tab='reviews'">Reviews ({{ book.reviews?.length || 0 }})</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="showReviews()">
+          <ng-container *ngIf="loadingReviews">
+            Reviews…
+          </ng-container>
+          <ng-container *ngIf="!loadingReviews">
+            Reviews{{ reviews.length ? ' (' + reviews.length + ')' : '' }}
+          </ng-container>
+        </button>
       </div>
 
       <div *ngIf="tab==='description'">
@@ -19,12 +26,18 @@
       </div>
 
       <div *ngIf="tab==='reviews'">
-        <div *ngIf="reviews && reviews.length; else noReviews">
-          <div *ngFor="let r of reviews" class="border p-2 mb-2 rounded">
-            <strong>{{ r.user }}:</strong> {{ r.text }}
-          </div>
+        <div *ngIf="loadingReviews" class="text-center py-3">
+          <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
         </div>
-        <ng-template #noReviews><p class="text-muted">No reviews yet.</p></ng-template>
+        <ng-container *ngIf="!loadingReviews">
+          <div *ngIf="reviews && reviews.length; else noReviews">
+            <div *ngFor="let r of reviews" class="border p-2 mb-2 rounded">
+              <strong>{{ r.user }}</strong>
+              <span *ngIf="r.rating">({{ r.rating }}/5)</span>: {{ r.text }}
+            </div>
+          </div>
+          <ng-template #noReviews><p class="text-muted">No reviews yet.</p></ng-template>
+        </ng-container>
       </div>
 
       <div class="mt-3">
