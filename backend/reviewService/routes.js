@@ -1,8 +1,10 @@
 import express from 'express';
 import Review from './Review.js';
 import { publish } from '../config/eventBus.js';
+import { createServiceLogger } from '../config/logger.js';
 
 const router = express.Router();
+const log = createServiceLogger('review-routes');
 
 // GET /api/reviews/:bookId – list all reviews for a book
 router.get('/:bookId', async (req, res) => {
@@ -16,6 +18,7 @@ router.get('/:bookId', async (req, res) => {
 
 // POST /api/reviews/:bookId – add a review
 router.post('/:bookId', async (req, res) => {
+  log.info('Adding review', { bookId: req.params.bookId });
   try {
     const review = await Review.create({
       ...req.body,
@@ -24,10 +27,17 @@ router.post('/:bookId', async (req, res) => {
 
     try {
       await publish('review:added', { bookId: req.params.bookId, reviewId: review._id });
-    } catch (_) {}
+    } catch (err) {
+      log.warn('Failed to publish review:added event', {
+        bookId: req.params.bookId,
+        reviewId: review._id,
+        error: err.message,
+      });
+    }
 
     res.status(201).json(review);
   } catch (err) {
+    log.error('Failed to add review', { bookId: req.params.bookId, error: err.message });
     res.status(400).json({ error: err.message });
   }
 });
@@ -44,10 +54,21 @@ router.put('/:bookId/:reviewId', async (req, res) => {
 
     try {
       await publish('review:updated', { bookId: req.params.bookId, reviewId: review._id });
-    } catch (_) {}
+    } catch (err) {
+      log.warn('Failed to publish review:updated event', {
+        bookId: req.params.bookId,
+        reviewId: review._id,
+        error: err.message,
+      });
+    }
 
     res.json(review);
   } catch (err) {
+    log.error('Failed to update review', {
+      bookId: req.params.bookId,
+      reviewId: req.params.reviewId,
+      error: err.message,
+    });
     res.status(400).json({ error: err.message });
   }
 });
@@ -63,10 +84,21 @@ router.delete('/:bookId/:reviewId', async (req, res) => {
 
     try {
       await publish('review:deleted', { bookId: req.params.bookId, reviewId: req.params.reviewId });
-    } catch (_) {}
+    } catch (err) {
+      log.warn('Failed to publish review:deleted event', {
+        bookId: req.params.bookId,
+        reviewId: req.params.reviewId,
+        error: err.message,
+      });
+    }
 
     res.json({ message: 'Review deleted' });
   } catch (err) {
+    log.error('Failed to delete review', {
+      bookId: req.params.bookId,
+      reviewId: req.params.reviewId,
+      error: err.message,
+    });
     res.status(500).json({ error: err.message });
   }
 });

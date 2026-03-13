@@ -1,13 +1,14 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
 import rateLimit from 'express-rate-limit';
 import axios from 'axios';
-import logger from './logger.js';
+import requestLogger, { createServiceLogger } from '../config/logger.js';
 
 const app = express();
 const PORT = process.env.GATEWAY_PORT || 3000;
+const log = createServiceLogger('gateway');
 
 // ── Service URLs ──────────────────────────────────────────────
 const BOOK_SERVICE_URL = process.env.BOOK_SERVICE_URL || 'http://localhost:3001';
@@ -18,7 +19,7 @@ const CATEGORY_SERVICE_URL = process.env.CATEGORY_SERVICE_URL || 'http://localho
 // ── Global Middleware ─────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
-app.use(logger);
+app.use(requestLogger);
 
 // ── Rate Limiting ─────────────────────────────────────────────
 const limiter = rateLimit({
@@ -32,7 +33,7 @@ app.use(limiter);
 
 // Request path logging for debugging
 app.use((req, res, next) => {
-  console.log(`[GATEWAY] ${req.method} ${req.path}`);
+  log.info('Incoming request', { method: req.method, path: req.path });
   next();
 });
 
@@ -49,7 +50,7 @@ app.get('/api/books/:id/details', async (req, res) => {
     ]);
     res.json({ ...bookRes.data, reviews: reviewsRes.data });
   } catch (err) {
-    console.error('Aggregation error:', err.message);
+    log.error('Aggregation error', { error: err.message, bookId: req.params.id });
     res.status(500).json({ error: 'Failed to aggregate book details' });
   }
 });
@@ -60,8 +61,11 @@ app.use(
   createProxyMiddleware({
     target: BOOK_SERVICE_URL,
     changeOrigin: true,
+    on: {
+      proxyReq: fixRequestBody,
+    },
     onError: (err, req, res) => {
-      console.error('Book Service proxy error:', err.message);
+      log.error('Book Service proxy error', { error: err.message, method: req.method, url: req.url });
       res.status(503).json({ error: 'Book Service unavailable' });
     },
   })
@@ -73,8 +77,11 @@ app.use(
   createProxyMiddleware({
     target: SEARCH_SERVICE_URL,
     changeOrigin: true,
+    on: {
+      proxyReq: fixRequestBody,
+    },
     onError: (err, req, res) => {
-      console.error('Search Service proxy error:', err.message);
+      log.error('Search Service proxy error', { error: err.message, method: req.method, url: req.url });
       res.status(503).json({ error: 'Search Service unavailable' });
     },
   })
@@ -86,8 +93,11 @@ app.use(
   createProxyMiddleware({
     target: REVIEW_SERVICE_URL,
     changeOrigin: true,
+    on: {
+      proxyReq: fixRequestBody,
+    },
     onError: (err, req, res) => {
-      console.error('Review Service proxy error:', err.message);
+      log.error('Review Service proxy error', { error: err.message, method: req.method, url: req.url });
       res.status(503).json({ error: 'Review Service unavailable' });
     },
   })
@@ -100,8 +110,11 @@ app.use(
     target: CATEGORY_SERVICE_URL,
     changeOrigin: true,
     logLevel: 'debug',
+    on: {
+      proxyReq: fixRequestBody,
+    },
     onError: (err, req, res) => {
-      console.error(`Category Service proxy error on ${req.method} ${req.url}:`, err.message);
+      log.error('Category Service proxy error', { error: err.message, method: req.method, url: req.url });
       res.status(503).json({ error: 'Category Service unavailable' });
     },
   })
@@ -109,11 +122,13 @@ app.use(
 
 // ── Start Gateway ─────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`🚀 API Gateway running on port ${PORT}`);
-  console.log(`   → Book Service:     ${BOOK_SERVICE_URL}`);
-  console.log(`   → Search Service:   ${SEARCH_SERVICE_URL}`);
-  console.log(`   → Review Service:   ${REVIEW_SERVICE_URL}`);
-  console.log(`   → Category Service: ${CATEGORY_SERVICE_URL}`);
+  log.info('API Gateway running', { port: PORT });
+  log.info('Service targets', {
+    books: BOOK_SERVICE_URL,
+    search: SEARCH_SERVICE_URL,
+    reviews: REVIEW_SERVICE_URL,
+    categories: CATEGORY_SERVICE_URL,
+  });
 });
 
 export default app;

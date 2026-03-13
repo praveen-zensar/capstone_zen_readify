@@ -1,7 +1,9 @@
 import express from 'express';
 import axios from 'axios';
+import { createServiceLogger } from '../config/logger.js';
 
 const router = express.Router();
+const log = createServiceLogger('category-routes');
 
 const BOOK_SERVICE_URL = process.env.BOOK_SERVICE_URL || 'http://localhost:3001';
 
@@ -20,7 +22,7 @@ router.get('/', async (req, res) => {
       editorsPicks: editorsPicks.data,
     });
   } catch (err) {
-    console.error('Category Service error:', err.message);
+    log.error('Category Service request failed', { error: err.message, route: '/' });
     res.status(500).json({ error: 'Failed to fetch categories' });
   }
 });
@@ -33,7 +35,11 @@ router.get('/:category', async (req, res) => {
     });
     res.json(books);
   } catch (err) {
-    console.error('Category Service error:', err.message);
+    log.error('Category Service request failed', {
+      error: err.message,
+      route: '/:category',
+      category: req.params.category,
+    });
     res.status(500).json({ error: 'Failed to fetch category' });
   }
 });

@@ -3,18 +3,18 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Microservices backend for Zen Readify application.",
-  "main": "config/index.js",
+  "main": "gateway/index.js",
   "author": "Praveen Patel",
   "license": "MIT",
   "scripts": {
-    "start:gateway": "node config/index.js",
+    "start:gateway": "node gateway/index.js",
     "start:books": "node bookService/index.js",
     "start:search": "node searchService/index.js",
     "start:reviews": "node reviewService/index.js",
     "start:categories": "node categoryService/index.js",
     "start:all": "concurrently \"npm run start:books\" \"npm run start:search\" \"npm run start:reviews\" \"npm run start:categories\" \"npm run start:gateway\"",
     "seed": "node scripts/seed.js",
-    "start:dev": "concurrently \"nodemon config/index.js\" \"nodemon bookService/index.js\" \"nodemon searchService/index.js\" \"nodemon reviewService/index.js\"  \"nodemon categoryService/index.js\""
+    "start:dev": "concurrently \"nodemon gateway/index.js\" \"nodemon bookService/index.js\" \"nodemon searchService/index.js\" \"nodemon reviewService/index.js\"  \"nodemon categoryService/index.js\""
   },
   "dependencies": {
     "axios": "^1.7.2",
