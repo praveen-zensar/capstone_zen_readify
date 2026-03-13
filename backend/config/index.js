@@ -4,7 +4,6 @@ import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import rateLimit from 'express-rate-limit';
 import axios from 'axios';
-import { authenticate } from './auth.js';
 import logger from './logger.js';
 
 const app = express();
@@ -39,22 +38,6 @@ app.use((req, res, next) => {
 
 // ── Health Check ──────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'api-gateway' }));
-
-// ── Diagnostic: Test Category Service ──────────────────────────
-app.get('/health', async (req, res) => {
-  try {
-    const response = await axios.get(`${CATEGORY_SERVICE_URL}/health`, { timeout: 5000 });
-    res.json({ status: 'ok', categoryServiceHealth: response.data });
-  } catch (err) {
-    console.error(`Cannot reach Category Service at ${CATEGORY_SERVICE_URL}:`, err.message);
-    res.status(503).json({ 
-      status: 'error', 
-      message: 'Category Service unreachable',
-      categoryServiceUrl: CATEGORY_SERVICE_URL,
-      error: err.message 
-    });
-  }
-});
 
 // ── Aggregation: Book + Reviews ─────────────────────────────
 // GET /api/books/:id/details  → combined book metadata + reviews
@@ -123,11 +106,6 @@ app.use(
     },
   })
 );
-
-// ── Protected route example (requires JWT) ───────────────────
-app.get('/api/me', authenticate, (req, res) => {
-  res.json({ user: req.user });
-});
 
 // ── Start Gateway ─────────────────────────────────────────────
 app.listen(PORT, () => {
